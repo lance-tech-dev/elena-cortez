@@ -1,26 +1,312 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================================
+   ELENA CORTEZ — PORTFOLIO DESIGN SYSTEM
+======================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --background: #faf9fc;
+  --foreground: #181522;
+
+  --surface: #ffffff;
+  --surface-secondary: #f3eff8;
+
+  --primary: #db4d9b;
+  --primary-hover: #c93687;
+
+  --secondary: #9664d8;
+  --accent: #b58af1;
+
+  --border: #e9e2ef;
+  --muted: #6f6a7b;
+
+  --gradient: linear-gradient(135deg, #e653a4 0%, #a66be5 100%);
+
+  --glow: 0 0 35px rgba(219, 77, 155, 0.12);
+  --shadow-card: 0 1px 2px rgba(24, 21, 34, 0.04),
+    0 8px 24px -12px rgba(24, 21, 34, 0.12);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+.dark {
+  color-scheme: dark;
+
+  --background: #09080e;
+  --foreground: #f8f5fc;
+
+  --surface: #12101a;
+  --surface-secondary: #1a1624;
+
+  --primary: #f06ab5;
+  --primary-hover: #ff83c4;
+
+  --secondary: #ae83f2;
+  --accent: #c5a1ff;
+
+  --border: rgba(255, 255, 255, 0.09);
+  --muted: #a39bad;
+
+  --gradient: linear-gradient(135deg, #f06ab5 0%, #a779f2 100%);
+
+  --glow: 0 0 45px rgba(186, 104, 226, 0.13);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 24px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   TAILWIND THEME TOKENS
+   Lets us write bg-surface, text-muted,
+   border-border, text-primary, etc.
+======================================== */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ========================================
+   BASE STYLES
+======================================== */
+
+html {
+  /* Painted on <html> too, so the canvas behind the page (overscroll
+     bounce, short pages, mobile browser chrome) follows the theme. */
+  background-color: var(--background);
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
 
 body {
+  min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 25%, transparent);
+  color: var(--foreground);
+}
+
+/* ========================================
+   THEME TRANSITION
+   1) Browsers with the View Transitions API get a
+      circular "reveal" that grows out of the toggle
+      button (driven from components/theme-toggle.tsx).
+   2) Other browsers get a soft color crossfade.
+======================================== */
+
+/* While the reveal snapshot is taken, freeze every CSS
+   transition so the "new" snapshot shows final colors. */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-switching::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-switching::view-transition-new(root) {
+  z-index: 2;
+}
+
+/* Fallback crossfade */
+html.theme-fade *,
+html.theme-fade *::before,
+html.theme-fade *::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow !important;
+  transition-duration: 500ms !important;
+  transition-timing-function: ease !important;
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR
+======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 20px;
+}
+
+/* ========================================
+   REUSABLE DESIGN UTILITIES
+======================================== */
+
+.gradient-text {
+  background: var(--gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.gradient-bg {
+  background: var(--gradient);
+}
+
+.glass {
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glow-effect {
+  box-shadow: var(--glow);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 300ms var(--ease-out-expo),
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: var(--shadow-card), var(--glow);
+}
+
+.section-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+@media (min-width: 640px) {
+  .section-container {
+    padding-inline: 24px;
+  }
+}
+
+/* Narrow reading column for page content (nav keeps .section-container). */
+.content-container {
+  width: 100%;
+  max-width: calc(56rem + 48px);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+@media (min-width: 640px) {
+  .content-container {
+    padding-inline: 32px;
+  }
+}
+
+/* ========================================
+   BACKGROUND ATMOSPHERE
+======================================== */
+
+.background-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: var(--primary);
+  filter: blur(150px);
+  opacity: 0.09;
+  pointer-events: none;
+}
+
+.dark .background-glow {
+  opacity: 0.14;
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at top, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at top, black 20%, transparent 70%);
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 700ms var(--ease-out-expo) both;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
