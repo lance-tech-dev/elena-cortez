@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { MapPin } from "lucide-react";
 import {
   ExperienceRows,
@@ -6,9 +7,11 @@ import {
   SkillChips,
   TextLink,
 } from "@/components/sections";
-import { experience, projects, site, skillGroups } from "@/lib/site";
+import { experience, projects, skillGroups } from "@/lib/site";
+import { bioParagraphs, getProfile, initials } from "@/lib/profile";
 
-export default function Page() {
+export default async function Page() {
+  const site = await getProfile();
   const topSkills = skillGroups.flatMap((g) => g.items).slice(0, 12);
 
   return (
@@ -30,13 +33,26 @@ export default function Page() {
         </div>
 
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:gap-8">
-          {/* Photo — drop a file at /public/profile.jpg and swap this for <Image>. */}
+          {/* Photo — managed in Admin → Profile. Initials until one is uploaded. */}
           <div className="mx-auto w-[160px] shrink-0 sm:mx-0 sm:w-[180px] lg:w-[220px]">
             <div className="relative grid aspect-[4/5] w-full place-items-center overflow-hidden rounded-md border border-border bg-surface-secondary">
-              <div aria-hidden className="gradient-bg absolute inset-0 opacity-15" />
-              <span className="gradient-text relative text-5xl font-black tracking-tighter">
-                EC
-              </span>
+              {site.avatarUrl ? (
+                <Image
+                  src={site.avatarUrl}
+                  alt={site.name}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 220px, (min-width: 640px) 180px, 160px"
+                  className="object-cover"
+                />
+              ) : (
+                <>
+                  <div aria-hidden className="gradient-bg absolute inset-0 opacity-15" />
+                  <span className="gradient-text relative text-5xl font-black tracking-tighter">
+                    {initials(site.name)}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -47,10 +63,10 @@ export default function Page() {
             </div>
 
             <div className="max-w-xl space-y-4 text-sm leading-relaxed text-muted">
-              {site.bio.map((p) => (
+              {bioParagraphs(site.bio).map((p) => (
                 <p key={p}>{p}</p>
               ))}
-              <p className="font-medium text-foreground">{site.tagline}</p>
+              {site.tagline && <p className="font-medium text-foreground">{site.tagline}</p>}
             </div>
 
             <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
@@ -69,7 +85,7 @@ export default function Page() {
 
       <section className="space-y-6">
         <SectionHeading index={2} title="Experience" href="/experience" linkLabel="Full history" />
-        <ExperienceRows items={experience} />
+        <ExperienceRows items={experience.slice(0, 4)} />
       </section>
 
       <section className="space-y-6">

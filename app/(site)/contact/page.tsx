@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { PageIntro } from "@/components/sections";
-import { site } from "@/lib/site";
+import { getProfile } from "@/lib/profile";
 
 export const metadata: Metadata = { title: "Contact" };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await getProfile();
   return (
     <div className="space-y-16">
       <PageIntro

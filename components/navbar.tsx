@@ -5,9 +5,17 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { navLinks, site } from "@/lib/site";
+import { navLinks } from "@/lib/site";
 
-export function Navbar() {
+export function Navbar({
+  name,
+  email,
+  monogram,
+}: {
+  name: string;
+  email: string;
+  monogram: string;
+}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -78,11 +86,11 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            aria-label={`${site.name} — home`}
+            aria-label={`${name} — home`}
             className="group flex items-center"
           >
             <span className="gradient-text text-3xl font-black tracking-tighter transition-transform duration-300 group-hover:-rotate-6">
-              EC
+              {monogram}
             </span>
           </Link>
 
@@ -218,11 +226,11 @@ export function Navbar() {
               <ArrowUpRight size={16} />
             </Link>
             <a
-              href={`mailto:${site.email}`}
+              href={`mailto:${email}`}
               className="flex items-center justify-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
             >
               <Mail size={14} />
-              {site.email}
+              {email}
             </a>
           </div>
         </nav>

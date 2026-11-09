@@ -127,9 +127,9 @@ export function ExperienceRows({
           key={i}
           className="border-b border-border py-3.5 text-sm last:border-b-0"
         >
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-baseline justify-between gap-4">
             <span className="w-12 shrink-0 text-xs text-muted">{item.year}</span>
-            <span className="min-w-0 flex-1 truncate font-bold">{item.title}</span>
+            <span className="min-w-0 flex-1 font-bold">{item.title}</span>
             <span className="shrink-0 text-right text-xs text-muted">{item.org}</span>
           </div>
           {detailed && item.description && (

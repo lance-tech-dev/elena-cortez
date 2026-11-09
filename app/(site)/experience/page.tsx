@@ -9,7 +9,7 @@ export default function ExperiencePage() {
     <div className="space-y-16">
       <PageIntro
         title="Experience"
-        description="Roles, education, and certifications along the way."
+        description="Teaching, public service, internships and freelance work, plus the degree that started it."
       />
       <ExperienceRows items={experience} detailed />
     </div>

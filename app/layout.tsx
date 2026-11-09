@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { getProfile } from "@/lib/profile";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,14 +14,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Elena Cortez | IT Portfolio",
-    template: "%s | Elena Cortez",
-  },
-  description:
-    "Personal portfolio showcasing IT projects, technical skills, and professional experience.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { name, role } = await getProfile();
+  return {
+    title: {
+      default: role ? `${name} | ${role}` : name,
+      template: `%s | ${name}`,
+    },
+    description:
+      "Personal portfolio showcasing IT projects, technical skills, and professional experience.",
+  };
+}
 
 export default function RootLayout({
   children,
@@ -37,11 +39,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-dvh flex-col">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Navbar />
-          <main className="content-container flex-1 py-12 font-mono sm:py-16">
-            {children}
-          </main>
-          <Footer />
+          {children}
         </ThemeProvider>
       </body>
     </html>
