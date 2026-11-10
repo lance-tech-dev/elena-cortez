@@ -44,12 +44,11 @@ export function Navbar({
   useEffect(() => {
     if (!menuOpen) return;
 
+    // No scrollbar-width padding needed: html has scrollbar-gutter: stable
+    // (globals.css), so hiding the scrollbar doesn't change the page width.
     const { body } = document;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const prevOverflow = body.style.overflow;
-    const prevPadding = body.style.paddingRight;
     body.style.overflow = "hidden";
-    body.style.paddingRight = `${scrollbarWidth}px`;
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -64,7 +63,6 @@ export function Navbar({
 
     return () => {
       body.style.overflow = prevOverflow;
-      body.style.paddingRight = prevPadding;
       window.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onBreakpoint);
     };

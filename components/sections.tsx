@@ -107,7 +107,7 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {projects.map((p) => (
-        <ProjectCard key={p.title} project={p} />
+        <ProjectCard key={p.id} project={p} />
       ))}
     </div>
   );
@@ -117,7 +117,7 @@ export function ExperienceRows({
   items,
   detailed = false,
 }: {
-  items: { year: string; title: string; org: string; description?: string }[];
+  items: { year: string; title: string; org: string; description?: string; href?: string }[];
   detailed?: boolean;
 }) {
   return (
@@ -129,7 +129,20 @@ export function ExperienceRows({
         >
           <div className="flex items-baseline justify-between gap-4">
             <span className="w-12 shrink-0 text-xs text-muted">{item.year}</span>
-            <span className="min-w-0 flex-1 font-bold">{item.title}</span>
+            <span className="min-w-0 flex-1 font-bold">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-border underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
+                >
+                  {item.title}
+                </a>
+              ) : (
+                item.title
+              )}
+            </span>
             <span className="shrink-0 text-right text-xs text-muted">{item.org}</span>
           </div>
           {detailed && item.description && (

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { PageIntro, ProjectGrid } from "@/components/sections";
-import { projects } from "@/lib/site";
+import { getPublishedProjects } from "@/lib/projects";
 
 export const metadata: Metadata = { title: "Projects" };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getPublishedProjects();
   return (
     <div className="space-y-16">
       <PageIntro

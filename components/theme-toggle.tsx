@@ -55,6 +55,16 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
     root.classList.add("theme-switching");
 
+    // Keep the scrollbar in the old colors until the reveal has covered the
+    // whole screen; it's drawn outside the transition snapshot (globals.css).
+    const current = getComputedStyle(root);
+    const frozen = {
+      "--scrollbar-track": current.getPropertyValue("--background"),
+      "--scrollbar-thumb-from": current.getPropertyValue("--primary"),
+      "--scrollbar-thumb-to": current.getPropertyValue("--secondary"),
+    };
+    Object.entries(frozen).forEach(([name, value]) => root.style.setProperty(name, value));
+
     const transition = document.startViewTransition(() => {
       // Apply the class synchronously so the "new" snapshot is correct,
       // then sync next-themes state (and localStorage).
@@ -82,6 +92,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
     transition.finished.finally(() => {
       root.classList.remove("theme-switching");
+      Object.keys(frozen).forEach((name) => root.style.removeProperty(name));
     });
   };
 

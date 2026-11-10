@@ -91,6 +91,13 @@ html {
   background-color: var(--background);
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
+  /* Keeps the layout from jumping sideways between long pages (scrollbar)
+     and short ones (none). 100vw includes the scrollbar and 100% doesn't,
+     so this offsets the page by the scrollbar's width and centered content
+     stays put. scrollbar-gutter: stable doesn't help here: Chrome on macOS
+     won't reserve space for the custom scrollbar below. It's 0 on phones
+     (overlay scrollbars) and while a menu or dialog locks scrolling. */
+  margin-left: calc(100vw - 100%);
 }
 
 body {
@@ -155,12 +162,20 @@ html.theme-fade *::after {
   width: 8px;
 }
 
+/* The --scrollbar-* overrides are set only while the theme reveal runs
+   (components/theme-toggle.tsx). The scrollbar isn't part of the animated
+   snapshot, so without them it switches colors instantly and shows as a
+   strip of the new theme beside the old page. */
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--scrollbar-track, var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  background: linear-gradient(
+    180deg,
+    var(--scrollbar-thumb-from, var(--primary)),
+    var(--scrollbar-thumb-to, var(--secondary))
+  );
   border-radius: 20px;
 }
 

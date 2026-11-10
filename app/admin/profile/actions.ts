@@ -5,6 +5,7 @@ import { after } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PROFILE_TAG } from "@/lib/profile";
+import { IMAGE_TYPES, sniffImage, type ImageType } from "@/lib/image";
 import { deleteObject, publicUrl, putObject } from "@/lib/r2";
 import { PROFILE_FIELDS, PROFILE_LIMITS, type ProfileField, type ProfileValues } from "./fields";
 
@@ -61,24 +62,6 @@ export type PhotoResult = { ok: true; avatarUrl: string | null } | { ok: false; 
 
 const MAX_PHOTO = 2 * 1024 * 1024; // cropped photo, made in the browser
 const MAX_ORIGINAL = 5 * 1024 * 1024; // downscaled original, kept for re-cropping
-
-const IMAGE_TYPES = {
-  "image/webp": "webp",
-  "image/jpeg": "jpg",
-  "image/png": "png",
-} as const;
-
-type ImageType = keyof typeof IMAGE_TYPES;
-
-/** Checks the file's first bytes, not just the type the browser claims. */
-async function sniffImage(file: File): Promise<ImageType | null> {
-  const b = new Uint8Array(await file.slice(0, 12).arrayBuffer());
-  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
-  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return "image/png";
-  const ascii = String.fromCharCode(...b);
-  if (ascii.startsWith("RIFF") && ascii.slice(8, 12) === "WEBP") return "image/webp";
-  return null;
-}
 
 async function currentPhotoKeys() {
   const supabase = await createClient();

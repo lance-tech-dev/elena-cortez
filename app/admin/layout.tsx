@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AdminTabs } from "./admin-tabs";
 import { logout } from "./actions";
+import { SessionTimeout } from "./session-timeout";
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s | Admin" },
@@ -34,6 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <AdminTabs />
       </header>
       <main className="content-container flex-1 py-8 sm:py-10">{children}</main>
+      <SessionTimeout />
     </div>
   );
 }

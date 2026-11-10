@@ -1,8 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isAdmin } from "@/lib/auth-role";
+import { LAST_ACTIVE_COOKIE, lastActiveCookieOptions, safeAdminPath } from "@/lib/session";
 
 export type LoginState = { error?: string; email?: string } | undefined;
 
@@ -24,5 +26,9 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
     return { error: "Invalid email or password.", email };
   }
 
-  redirect("/admin");
+  // Start the 30-minute idle clock (see lib/session.ts).
+  (await cookies()).set(LAST_ACTIVE_COOKIE, String(Date.now()), lastActiveCookieOptions);
+
+  // Back to where the admin was when the session expired, if anywhere.
+  redirect(safeAdminPath(String(formData.get("next") ?? "")));
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Clock, Loader2 } from "lucide-react";
 import { login } from "./actions";
 
 const inputClass =
@@ -9,9 +10,19 @@ const inputClass =
 
 export function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined);
+  const params = useSearchParams();
+  const expired = params.get("reason") === "expired";
+  const next = params.get("next") ?? "";
 
   return (
     <form action={action} className="space-y-4">
+      {expired && !state?.error && (
+        <p role="status" className="flex gap-2 rounded-xl border border-primary/40 bg-primary/5 p-3 text-xs leading-relaxed">
+          <Clock size={14} className="mt-0.5 shrink-0 text-primary" />
+          Your session expired after 30 minutes of inactivity. Sign in again to continue.
+        </p>
+      )}
+      <input type="hidden" name="next" value={next} />
       <div className="space-y-1.5">
         <label htmlFor="email" className="text-xs text-muted">
           Email

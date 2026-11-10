@@ -3,29 +3,37 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { Briefcase, FolderKanban, Settings, Sparkles, UserRound } from "lucide-react";
+import { Briefcase, FolderKanban, ScrollText, Sparkles, Trophy, UserRound } from "lucide-react";
 
 export const adminTabs = [
   { name: "Profile", href: "/admin/profile", icon: UserRound },
   { name: "Projects", href: "/admin/projects", icon: FolderKanban },
   { name: "Experience", href: "/admin/experience", icon: Briefcase },
+  { name: "Certificates", href: "/admin/certificates", icon: ScrollText },
+  { name: "Awards", href: "/admin/awards", icon: Trophy },
   { name: "Skills", href: "/admin/skills", icon: Sparkles },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
 ] as const;
 
 export function AdminTabs() {
   const pathname = usePathname();
   const activeRef = useRef<HTMLAnchorElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
-  // On narrow screens the tab row scrolls; keep the active tab in view.
+  // On narrow screens the tab row scrolls sideways; center the active tab.
+  // Scrolls only the tab row: scrollIntoView() would also move the page,
+  // fighting the scroll-to-top that happens on navigation.
   useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+    const list = listRef.current;
+    const tab = activeRef.current;
+    if (!list || !tab || list.scrollWidth <= list.clientWidth) return;
+    const left = tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2;
+    list.scrollTo({ left: Math.max(0, left), behavior: "instant" });
   }, [pathname]);
 
   return (
     <nav aria-label="Admin sections" className="border-b border-border">
       <div className="content-container">
-        <ul className="-mb-px flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <ul ref={listRef} className="relative -mb-px flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {adminTabs.map(({ name, href, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (

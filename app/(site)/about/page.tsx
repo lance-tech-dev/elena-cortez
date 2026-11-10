@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ExperienceRows, PageIntro, SectionHeading, TextLink } from "@/components/sections";
-import { awards, trainings } from "@/lib/site";
+import { awardRow, getAwards } from "@/lib/awards";
+import { getCertificates } from "@/lib/certificate";
+import { toRow } from "@/lib/certificate-format";
 import { bioParagraphs, getProfile } from "@/lib/profile";
 
 export const metadata: Metadata = { title: "About" };
@@ -13,7 +15,11 @@ const values = [
 ];
 
 export default async function AboutPage() {
-  const site = await getProfile();
+  const [site, { items: certificates }, { awards }] = await Promise.all([
+    getProfile(),
+    getCertificates(),
+    getAwards(),
+  ]);
   return (
     <div className="space-y-16">
       <PageIntro title="About" description={site.role} />
@@ -42,12 +48,12 @@ export default async function AboutPage() {
 
       <section className="space-y-6">
         <SectionHeading index={2} title="Recognition" />
-        <ExperienceRows items={awards} />
+        <ExperienceRows items={awards.map(awardRow)} detailed />
       </section>
 
       <section className="space-y-6">
         <SectionHeading index={3} title="Trainings & seminars" />
-        <ExperienceRows items={trainings} detailed />
+        <ExperienceRows items={certificates.map(toRow)} detailed />
       </section>
 
       <div className="flex flex-wrap gap-4 text-xs">

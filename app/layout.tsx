@@ -34,6 +34,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      // globals.css sets scroll-behavior: smooth (for #anchor links). Since
+      // Next 16 that also animates the jump to the top on every navigation,
+      // which looks like the page glitching. This attribute makes Next turn
+      // smooth scrolling off while it changes routes.
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >

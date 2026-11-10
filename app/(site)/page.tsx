@@ -7,11 +7,19 @@ import {
   SkillChips,
   TextLink,
 } from "@/components/sections";
-import { experience, projects, skillGroups } from "@/lib/site";
+import { getPublishedProjects } from "@/lib/projects";
+import { getSkillGroups } from "@/lib/skills";
+import { getExperience } from "@/lib/experience";
+import { toRow } from "@/lib/experience-format";
 import { bioParagraphs, getProfile, initials } from "@/lib/profile";
 
 export default async function Page() {
-  const site = await getProfile();
+  const [site, { items: experience }, { groups: skillGroups }, projects] = await Promise.all([
+    getProfile(),
+    getExperience(),
+    getSkillGroups(),
+    getPublishedProjects(),
+  ]);
   const topSkills = skillGroups.flatMap((g) => g.items).slice(0, 12);
 
   return (
@@ -85,7 +93,7 @@ export default async function Page() {
 
       <section className="space-y-6">
         <SectionHeading index={2} title="Experience" href="/experience" linkLabel="Full history" />
-        <ExperienceRows items={experience.slice(0, 4)} />
+        <ExperienceRows items={experience.slice(0, 4).map(toRow)} />
       </section>
 
       <section className="space-y-6">

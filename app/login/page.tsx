@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getProfile } from "@/lib/profile";
 import { LoginForm } from "./login-form";
 
@@ -19,7 +20,10 @@ export default async function LoginPage() {
           </p>
           <h1 className="text-2xl font-bold">Admin sign in</h1>
         </div>
-        <LoginForm />
+        {/* The form reads ?reason=expired and ?next= from the URL. */}
+        <Suspense fallback={<div className="h-56 animate-pulse rounded-xl bg-surface-secondary" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </main>
   );
